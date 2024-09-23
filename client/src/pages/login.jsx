@@ -6,12 +6,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [item, setResponse] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const signupMessage = location.state.message;
-  console.log("sign up message : " + JSON.stringify(signupMessage));
+  const signupMessage = location.state ? location.state.message : null; // Updated line
 
   const CheckPassword = async (e) => {
     e.preventDefault();
@@ -20,12 +18,9 @@ function Login() {
         username,
         password,
       });
-      console.log("response in jsx file is : " + JSON.stringify(response.data));
       if (response.data === "success") {
-        // console.log("entered now");
         navigate("/welcome", { state: { name: username } });
       } else {
-        console.log("wrong username / password entered !");
         setMessage("wrong username / password entered !");
       }
     } catch (err) {
@@ -35,7 +30,8 @@ function Login() {
 
   return (
     <div className="loginDiv">
-      <h1>{signupMessage ? signupMessage : "Login page : "}</h1>
+      <h1>{signupMessage ? signupMessage : "Login page : "}</h1>{" "}
+      {/* This line is already correct */}
       <form onSubmit={CheckPassword}>
         <div>
           <label>Username</label>
