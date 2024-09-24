@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "https://basic-auth-sandy.vercel.app" })); // Updated to remove trailing slash
+app.use(cors()); // Updated to remove trailing slash
 app.use(bodyParser.json());
 
 // MongoDB connection
