@@ -10,10 +10,13 @@ function Signup() {
   const AddUser = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/signup", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "https://basicauth-ogg3.onrender.com/signup",
+        {
+          username,
+          password,
+        }
+      );
       if (response.data === "success") {
         navigate("/login", { state: { message: "sign up success !" } });
       } else {

@@ -7,20 +7,24 @@ const mongoose = require("mongoose");
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: "https://basic-auth-sandy.vercel.app/" }));
 app.use(bodyParser.json());
 
-// Postgres pool setup
+// MongoDB connection
 mongoose
-  .connect("mongodb://localhost:27017/myDatabase", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    "mongodb+srv://shantanu:iamShantanu%4003@catnip.jdygqyz.mongodb.net/?retryWrites=true&w=majority&appName=catnip",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => {
     console.log("MongoDB connected");
   })
   .catch((err) => console.error("MongoDB connection error:", err));
 
+// Define User Schema
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
@@ -33,6 +37,7 @@ app.get("/", (req, res) => {
   res.send("Backend is running");
 });
 
+// Signup Route
 // In your signup route
 app.post("/signup", async (req, res) => {
   try {
@@ -45,6 +50,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// Login Route
 app.post("/login", async (req, res) => {
   console.log("this is your body: " + JSON.stringify(req.body));
   try {
@@ -64,6 +70,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Start the server
 app.listen(5000, () => {
   console.log("Server is running on http://localhost:5000");
 });
