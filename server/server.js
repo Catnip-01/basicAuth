@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "https://basic-auth-sandy.vercel.app/" }));
+app.use(cors({ origin: "https://basic-auth-sandy.vercel.app" }));
 app.use(bodyParser.json());
 
 // MongoDB connection
