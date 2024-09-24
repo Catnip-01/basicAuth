@@ -42,7 +42,7 @@ app.post("/signup", async (req, res) => {
   console.log("Signup request received:", req.body); // Debugging log
   try {
     const user = new User(req.body);
-    user.insertOne();
+    await user.save();
     console.log("User signed up successfully:", user); // Debugging log
     res.send("success");
   } catch (err) {
