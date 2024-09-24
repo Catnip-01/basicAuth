@@ -7,13 +7,17 @@ const mongoose = require("mongoose");
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "https://basic-auth-sandy.vercel.app" }));
+app.use(cors({ origin: "https://basic-auth-sandy.vercel.app" })); // Updated to remove trailing slash
 app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose
   .connect(
-    "mongodb+srv://shantanu:iamShantanu%4003@catnip.jdygqyz.mongodb.net/?retryWrites=true&w=majority&appName=catnip"
+    "mongodb+srv://shantanu:iamShantanu%4003@catnip.jdygqyz.mongodb.net/?retryWrites=true&w=majority&appName=catnip",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
   )
   .then(() => {
     console.log("MongoDB connected");
@@ -34,34 +38,38 @@ app.get("/", (req, res) => {
 });
 
 // Signup Route
-// In your signup route
 app.post("/signup", async (req, res) => {
+  console.log("Signup request received:", req.body); // Debugging log
   try {
-    const user = new User(req.body); // Assuming you have a User model
+    const user = new User(req.body);
     await user.save();
-    res.send("success"); // Ensure this is sent on successful signup
+    console.log("User signed up successfully:", user); // Debugging log
+    res.send("success");
   } catch (err) {
-    console.error("Error during signup:", err);
-    res.status(500).send("error"); // Send an error response if there is an issue
+    console.error("Error during signup:", err); // Debugging log
+    res.status(500).send("error");
   }
 });
 
 // Login Route
 app.post("/login", async (req, res) => {
-  console.log("this is your body: " + JSON.stringify(req.body));
+  console.log("Login request received:", req.body); // Debugging log
   try {
     const user = await User.findOne({ username: req.body.username });
     if (user) {
+      console.log("User found:", user); // Debugging log
       if (user.password === req.body.password) {
         res.send("success");
       } else {
+        console.log("Incorrect password for user:", user.username); // Debugging log
         res.send("you entered wrong password!");
       }
     } else {
+      console.log("User not found for username:", req.body.username); // Debugging log
       res.send("item does not exist!");
     }
   } catch (err) {
-    console.log("error: " + err);
+    console.error("Error during login:", err); // Debugging log
     res.status(500).send("Error logging in");
   }
 });
