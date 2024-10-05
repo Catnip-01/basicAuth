@@ -25,7 +25,7 @@ function App() {
         <Route path="/welcome" element={<Welcome />} />
       </Routes>
     </Router>
-  <img src="/Ambu.jpeg" alt="Ambulance Image" />
+  
 
   </div>
   );
