@@ -84,3 +84,35 @@ public class EmployeeDatabaseExample {
         return rs.getInt(1);
     }
 }
+
+car
+
+import java.sql.*;
+
+public class CarDatabaseExample {
+    public static void main(String[] args) throws SQLException {
+        String url = "jdbc:mysql://localhost:3306/mydatabase", user = "root", password = "";
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Car (Model VARCHAR(50), Company VARCHAR(50), Price DECIMAL(10, 2), Year INT, PRIMARY KEY (Model, Year))");
+            String[] insertData = {
+                "('ABC', 'Toyota', 150000, 2010)", "('XYZ', 'Honda', 200000, 2018)"
+            };
+            for (String data : insertData) stmt.executeUpdate("INSERT INTO Car (Model, Company, Price, Year) VALUES " + data);
+
+            displayResults(stmt, "SELECT * FROM Car", "All cars:");
+            stmt.executeUpdate("INSERT INTO Car (Model, Company, Price, Year) VALUES ('DEF', 'Tesla', 300000, 2021)");
+            displayResults(stmt, "SELECT * FROM Car", "After adding Tesla:");
+            stmt.executeUpdate("DELETE FROM Car WHERE Model = 'ABC' AND Year = 2010");
+            displayResults(stmt, "SELECT * FROM Car", "After deleting ABC model:");
+            stmt.executeUpdate("UPDATE Car SET Price = 125000 WHERE Price = 150000");
+            displayResults(stmt, "SELECT * FROM Car", "After updating price of Toyota:");
+        }
+    }
+
+    private static void displayResults(Statement stmt, String query, String message) throws SQLException {
+        System.out.println("\n" + message);
+        ResultSet rs = stmt.executeQuery(query);
+        while (rs.next()) System.out.printf("%s\t%s\t%.2f\t%d%n", rs.getString("Model"), rs.getString("Company"), rs.getDouble("Price"), rs.getInt("Year"));
+    }
+}
