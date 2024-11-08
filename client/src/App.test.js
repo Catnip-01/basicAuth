@@ -116,3 +116,77 @@ public class CarDatabaseExample {
         while (rs.next()) System.out.printf("%s\t%s\t%.2f\t%d%n", rs.getString("Model"), rs.getString("Company"), rs.getDouble("Price"), rs.getInt("Year"));
     }
 }
+
+// Import necessary libraries
+const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+const users = []; // Temporary in-memory storage (use a database in production)
+const SECRET_KEY = 'your_secret_key_here'; // Replace with a strong secret key in production
+
+app.use(bodyParser.json());
+
+// Register endpoint
+app.post('/register', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = users.find(user => user.username === username);
+    if (existingUser) return res.status(400).json({ message: 'User already exists' });
+
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Save user
+    const user = { username, password: hashedPassword };
+    users.push(user);
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error registering user' });
+  }
+});
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Find user
+    const user = users.find(user => user.username === username);
+    if (!user) return res.status(400).json({ message: 'User not found' });
+
+    // Check password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) return res.status(400).json({ message: 'Invalid password' });
+
+    // Generate JWT token
+    const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+
+    res.json({ message: 'Login successful', token });
+  } catch (error) {
+    res.status(500).json({ message: 'Error logging in' });
+  }
+});
+
+// Protected route
+app.get('/protected', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: 'Access denied' });
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    res.json({ message: 'Access granted', user: decoded });
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
